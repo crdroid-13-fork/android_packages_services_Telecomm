@@ -51,6 +51,7 @@ import android.os.RemoteException;
 import android.os.Trace;
 import android.os.UserHandle;
 import android.os.UserManager;
+import android.os.VibrationAttributes;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.Settings;
@@ -99,6 +100,9 @@ public class InCallController extends CallsManagerListenerBase implements
             VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK);
     private static final VibrationEffect CALL_DISCONNECT_EFFECT =
             VibrationEffect.createPredefined(VibrationEffect.EFFECT_DOUBLE_CLICK);
+    private static final VibrationAttributes IN_CALL_VIBRATION_ATTRIBUTES =
+        VibrationAttributes.createForUsage(VibrationAttributes.USAGE_ACCESSIBILITY);
+
 
     public class InCallServiceConnection {
         /**
@@ -1331,7 +1335,7 @@ public class InCallController extends CallsManagerListenerBase implements
 
     public void vibrate(VibrationEffect effect) {
         if (mVibrator.hasVibrator()) {
-            mVibrator.vibrate(effect);
+            mVibrator.vibrate(effect, IN_CALL_VIBRATION_ATTRIBUTES);
         }
     }
 
