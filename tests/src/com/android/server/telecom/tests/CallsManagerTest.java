@@ -285,17 +285,15 @@ public class CallsManagerTest extends TelecomTestCase {
         when(mToastFactory.makeText(any(), any(), anyInt())).thenReturn(mToast);
         when(mIConnectionService.asBinder()).thenReturn(mock(IBinder.class));
 
-        mComponentContextFixture.addConnectionService(new ComponentName(mContext.getPackageName(),
-                mContext.getPackageName().getClass().getName()), mIConnectionService);
+        mComponentContextFixture.addConnectionService(
+                SIM_1_ACCOUNT.getAccountHandle().getComponentName(), mIConnectionService);
     }
 
     @Override
     @After
     public void tearDown() throws Exception {
         mComponentContextFixture.removeConnectionService(
-                new ComponentName(mContext.getPackageName(),
-                        mContext.getPackageName().getClass().getName()),
-                mock(IConnectionService.class));
+                SIM_1_ACCOUNT.getAccountHandle().getComponentName(), mIConnectionService);
         super.tearDown();
     }
 
@@ -1710,8 +1708,8 @@ public class CallsManagerTest extends TelecomTestCase {
 
     @Test
     public void testConnectionServiceCreateConnectionTimeout() throws Exception {
-        ConnectionServiceWrapper service = new ConnectionServiceWrapper(new ComponentName(
-                mContext.getPackageName(), mContext.getPackageName().getClass().getName()), null,
+        ConnectionServiceWrapper service = new ConnectionServiceWrapper(
+                SIM_1_ACCOUNT.getAccountHandle().getComponentName(), null,
                 mPhoneAccountRegistrar, mCallsManager, mContext, mLock, null);
         TestScheduledExecutorService scheduledExecutorService = new TestScheduledExecutorService();
         service.setScheduledExecutorService(scheduledExecutorService);
@@ -1732,6 +1730,9 @@ public class CallsManagerTest extends TelecomTestCase {
                 return scheduledExecutorService.isRunnableScheduledAtTime(15000L);
             }
         }, 5000L, "Expected job failed to schedule");
+        scheduledExecutorService.advanceTime(15000L);
+        verify(response).handleCreateConnectionFailure(
+                eq(new DisconnectCause(DisconnectCause.ERROR)));
     }
 
     private Call addSpyCall() {
